@@ -17,6 +17,10 @@ RUN npx prisma generate
 # Build the application
 RUN npm run build
 
+# Create database directory and initialize
+RUN mkdir -p /app/prisma
+RUN npx prisma db push --accept-data-loss
+
 # Expose port
 EXPOSE 3000
 
