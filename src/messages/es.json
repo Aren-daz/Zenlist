@@ -1,0 +1,182 @@
+{
+  "common": {
+    "save": "Guardar",
+    "saving": "Guardando...",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "add": "Añadir",
+    "create": "Crear",
+    "update": "Actualizar",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "close": "Cerrar",
+    "loading": "Cargando...",
+    "error": "Error",
+    "success": "Éxito",
+    "yes": "Sí",
+    "no": "No",
+    "name": "Nombre",
+    "description": "Descripción",
+    "date": "Fecha",
+    "status": "Estado",
+    "priority": "Prioridad"
+  },
+  "navigation": {
+    "dashboard": "Panel de Control",
+    "tasks": "Tareas",
+    "projects": "Proyectos",
+    "calendar": "Calendario",
+    "analytics": "Analíticas",
+    "habits": "Hábitos",
+    "team": "Equipo",
+    "tags": "Etiquetas",
+    "settings": "Configuración"
+  },
+  "auth": {
+    "signin": "Iniciar Sesión",
+    "signup": "Registrarse",
+    "signout": "Cerrar Sesión",
+    "email": "Email",
+    "password": "Contraseña",
+    "confirmPassword": "Confirmar Contraseña",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "dontHaveAccount": "¿No tienes una cuenta?",
+    "alreadyHaveAccount": "¿Ya tienes una cuenta?",
+    "loginRequired": "Inicio de Sesión Requerido",
+    "accessRequired": "Debes iniciar sesión para acceder a esta página"
+  },
+  "settings": {
+    "title": "Configuración",
+    "subtitle": "Gestiona tu cuenta y preferencias",
+    "saveAll": "Guardar Todo",
+    "profile": {
+      "title": "Perfil",
+      "subtitle": "Información de tu cuenta",
+      "fullName": "Nombre Completo",
+      "email": "Email",
+      "phone": "Teléfono",
+      "location": "Ubicación",
+      "bio": "Biografía",
+      "bioPlaceholder": "Cuéntanos sobre ti...",
+      "save": "Guardar Perfil",
+      "memberSince": "Miembro desde",
+      "joinedOn": "Se unió el"
+    },
+    "notifications": {
+      "title": "Notificaciones",
+      "emailNotifications": "Notificaciones por email",
+      "emailNotificationsDesc": "Recibir notificaciones por email",
+      "pushNotifications": "Notificaciones push",
+      "pushNotificationsDesc": "Recibir notificaciones push en el navegador",
+      "taskReminders": "Recordatorios de tareas",
+      "taskRemindersDesc": "Recibir recordatorios para tareas próximas",
+      "weeklyUpdates": "Actualizaciones semanales",
+      "weeklyUpdatesDesc": "Resumen semanal de tu actividad",
+      "save": "Guardar Notificaciones"
+    },
+    "security": {
+      "title": "Seguridad",
+      "currentPassword": "Contraseña Actual",
+      "newPassword": "Nueva Contraseña",
+      "confirmPassword": "Confirmar Contraseña",
+      "updatePassword": "Actualizar Contraseña",
+      "twoFactor": "Autenticación de Dos Factores",
+      "enable2FA": "Activar 2FA",
+      "enable2FADesc": "Añade una capa extra de seguridad"
+    },
+    "appearance": {
+      "title": "Apariencia",
+      "theme": "Tema",
+      "light": "Claro",
+      "dark": "Oscuro",
+      "system": "Sistema",
+      "language": "Idioma",
+      "timezone": "Zona Horaria",
+      "compactView": "Vista compacta",
+      "compactViewDesc": "Mostrar más elementos en el espacio disponible",
+      "save": "Guardar Apariencia"
+    }
+  },
+  "tasks": {
+    "title": "Tareas",
+    "newTask": "Nueva Tarea",
+    "editTask": "Editar Tarea",
+    "taskTitle": "Título de la Tarea",
+    "taskDescription": "Descripción de la Tarea",
+    "dueDate": "Fecha de Vencimiento",
+    "assignTo": "Asignar a",
+    "project": "Proyecto",
+    "tags": "Etiquetas",
+    "status": {
+      "todo": "Por Hacer",
+      "inProgress": "En Progreso",
+      "done": "Hecho",
+      "archived": "Archivado"
+    },
+    "priority": {
+      "low": "Baja",
+      "medium": "Media",
+      "high": "Alta"
+    },
+    "filters": {
+      "all": "Todas",
+      "status": "Estado",
+      "priority": "Prioridad",
+      "project": "Proyecto",
+      "assignee": "Asignado"
+    }
+  },
+  "projects": {
+    "title": "Proyectos",
+    "newProject": "Nuevo Proyecto",
+    "editProject": "Editar Proyecto",
+    "projectName": "Nombre del Proyecto",
+    "projectDescription": "Descripción del Proyecto",
+    "color": "Color",
+    "noProject": "Sin Proyecto"
+  },
+  "habits": {
+    "title": "Hábitos",
+    "newHabit": "Nuevo Hábito",
+    "habitName": "Nombre del Hábito",
+    "frequency": "Frecuencia",
+    "daily": "Diario",
+    "weekly": "Semanal",
+    "monthly": "Mensual"
+  },
+  "calendar": {
+    "title": "Calendario",
+    "today": "Hoy",
+    "month": "Mes",
+    "week": "Semana",
+    "day": "Día"
+  },
+  "analytics": {
+    "title": "Analíticas",
+    "overview": "Resumen",
+    "productivity": "Productividad",
+    "timeTracking": "Seguimiento de Tiempo"
+  },
+  "search": {
+    "placeholder": "Buscar tareas...",
+    "noResults": "No se encontraron resultados",
+    "filters": "Filtros"
+  },
+  "languages": {
+    "fr": "Français",
+    "en": "English",
+    "es": "Español",
+    "de": "Deutsch"
+  },
+  "toast": {
+    "profileUpdated": "Perfil actualizado con éxito",
+    "profileError": "Error al actualizar el perfil",
+    "notificationsUpdated": "Preferencias de notificación guardadas",
+    "appearanceUpdated": "Preferencias de apariencia guardadas",
+    "passwordUpdated": "Contraseña actualizada con éxito",
+    "passwordError": "Error al actualizar la contraseña",
+    "passwordMismatch": "Las contraseñas no coinciden",
+    "saveError": "Error al guardar"
+  }
+}

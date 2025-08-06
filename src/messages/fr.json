@@ -1,0 +1,182 @@
+{
+  "common": {
+    "save": "Enregistrer",
+    "saving": "Enregistrement...",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "add": "Ajouter",
+    "create": "Créer",
+    "update": "Mettre à jour",
+    "search": "Rechercher",
+    "filter": "Filtrer",
+    "close": "Fermer",
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "success": "Succès",
+    "yes": "Oui",
+    "no": "Non",
+    "name": "Nom",
+    "description": "Description",
+    "date": "Date",
+    "status": "Statut",
+    "priority": "Priorité"
+  },
+  "navigation": {
+    "dashboard": "Tableau de bord",
+    "tasks": "Tâches",
+    "projects": "Projets",
+    "calendar": "Calendrier",
+    "analytics": "Analytiques",
+    "habits": "Habitudes",
+    "team": "Équipe",
+    "tags": "Étiquettes",
+    "settings": "Paramètres"
+  },
+  "auth": {
+    "signin": "Se connecter",
+    "signup": "S'inscrire",
+    "signout": "Se déconnecter",
+    "email": "Email",
+    "password": "Mot de passe",
+    "confirmPassword": "Confirmer le mot de passe",
+    "forgotPassword": "Mot de passe oublié ?",
+    "dontHaveAccount": "Vous n'avez pas de compte ?",
+    "alreadyHaveAccount": "Vous avez déjà un compte ?",
+    "loginRequired": "Connexion requise",
+    "accessRequired": "Vous devez être connecté pour accéder à cette page"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "subtitle": "Gérez votre compte et vos préférences",
+    "saveAll": "Enregistrer tout",
+    "profile": {
+      "title": "Profil",
+      "subtitle": "Informations de votre compte",
+      "fullName": "Nom complet",
+      "email": "Email",
+      "phone": "Téléphone",
+      "location": "Localisation",
+      "bio": "Biographie",
+      "bioPlaceholder": "Parlez-nous de vous...",
+      "save": "Sauvegarder le profil",
+      "memberSince": "Membre depuis",
+      "joinedOn": "Inscrit le"
+    },
+    "notifications": {
+      "title": "Notifications",
+      "emailNotifications": "Notifications par email",
+      "emailNotificationsDesc": "Recevoir des notifications par email",
+      "pushNotifications": "Notifications push",
+      "pushNotificationsDesc": "Recevoir des notifications push dans le navigateur",
+      "taskReminders": "Rappels de tâches",
+      "taskRemindersDesc": "Recevoir des rappels pour les tâches à venir",
+      "weeklyUpdates": "Mises à jour hebdomadaires",
+      "weeklyUpdatesDesc": "Résumé hebdomadaire de votre activité",
+      "save": "Sauvegarder les notifications"
+    },
+    "security": {
+      "title": "Sécurité",
+      "currentPassword": "Mot de passe actuel",
+      "newPassword": "Nouveau mot de passe",
+      "confirmPassword": "Confirmer le mot de passe",
+      "updatePassword": "Mettre à jour le mot de passe",
+      "twoFactor": "Authentification à deux facteurs",
+      "enable2FA": "Activer 2FA",
+      "enable2FADesc": "Ajoutez une couche de sécurité supplémentaire"
+    },
+    "appearance": {
+      "title": "Apparence",
+      "theme": "Thème",
+      "light": "Clair",
+      "dark": "Sombre",
+      "system": "Système",
+      "language": "Langue",
+      "timezone": "Fuseau horaire",
+      "compactView": "Vue compacte",
+      "compactViewDesc": "Afficher plus d'éléments dans l'espace disponible",
+      "save": "Sauvegarder l'apparence"
+    }
+  },
+  "tasks": {
+    "title": "Tâches",
+    "newTask": "Nouvelle tâche",
+    "editTask": "Modifier la tâche",
+    "taskTitle": "Titre de la tâche",
+    "taskDescription": "Description de la tâche",
+    "dueDate": "Date d'échéance",
+    "assignTo": "Assigner à",
+    "project": "Projet",
+    "tags": "Étiquettes",
+    "status": {
+      "todo": "À faire",
+      "inProgress": "En cours",
+      "done": "Terminé",
+      "archived": "Archivé"
+    },
+    "priority": {
+      "low": "Faible",
+      "medium": "Moyen",
+      "high": "Élevé"
+    },
+    "filters": {
+      "all": "Toutes",
+      "status": "Statut",
+      "priority": "Priorité",
+      "project": "Projet",
+      "assignee": "Assigné"
+    }
+  },
+  "projects": {
+    "title": "Projets",
+    "newProject": "Nouveau projet",
+    "editProject": "Modifier le projet",
+    "projectName": "Nom du projet",
+    "projectDescription": "Description du projet",
+    "color": "Couleur",
+    "noProject": "Aucun projet"
+  },
+  "habits": {
+    "title": "Habitudes",
+    "newHabit": "Nouvelle habitude",
+    "habitName": "Nom de l'habitude",
+    "frequency": "Fréquence",
+    "daily": "Quotidien",
+    "weekly": "Hebdomadaire",
+    "monthly": "Mensuel"
+  },
+  "calendar": {
+    "title": "Calendrier",
+    "today": "Aujourd'hui",
+    "month": "Mois",
+    "week": "Semaine",
+    "day": "Jour"
+  },
+  "analytics": {
+    "title": "Analytiques",
+    "overview": "Aperçu",
+    "productivity": "Productivité",
+    "timeTracking": "Suivi du temps"
+  },
+  "search": {
+    "placeholder": "Rechercher des tâches...",
+    "noResults": "Aucun résultat trouvé",
+    "filters": "Filtres"
+  },
+  "languages": {
+    "fr": "Français",
+    "en": "English",
+    "es": "Español",
+    "de": "Deutsch"
+  },
+  "toast": {
+    "profileUpdated": "Profil mis à jour avec succès",
+    "profileError": "Erreur lors de la mise à jour du profil",
+    "notificationsUpdated": "Préférences de notifications sauvegardées",
+    "appearanceUpdated": "Préférences d'apparence sauvegardées",
+    "passwordUpdated": "Mot de passe mis à jour avec succès",
+    "passwordError": "Erreur lors de la mise à jour du mot de passe",
+    "passwordMismatch": "Les mots de passe ne correspondent pas",
+    "saveError": "Erreur lors de la sauvegarde"
+  }
+}

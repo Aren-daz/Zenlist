@@ -1,0 +1,182 @@
+{
+  "common": {
+    "save": "Save",
+    "saving": "Saving...",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "create": "Create",
+    "update": "Update",
+    "search": "Search",
+    "filter": "Filter",
+    "close": "Close",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "yes": "Yes",
+    "no": "No",
+    "name": "Name",
+    "description": "Description",
+    "date": "Date",
+    "status": "Status",
+    "priority": "Priority"
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "tasks": "Tasks",
+    "projects": "Projects",
+    "calendar": "Calendar",
+    "analytics": "Analytics",
+    "habits": "Habits",
+    "team": "Team",
+    "tags": "Tags",
+    "settings": "Settings"
+  },
+  "auth": {
+    "signin": "Sign In",
+    "signup": "Sign Up",
+    "signout": "Sign Out",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "forgotPassword": "Forgot password?",
+    "dontHaveAccount": "Don't have an account?",
+    "alreadyHaveAccount": "Already have an account?",
+    "loginRequired": "Login Required",
+    "accessRequired": "You must be logged in to access this page"
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage your account and preferences",
+    "saveAll": "Save All",
+    "profile": {
+      "title": "Profile",
+      "subtitle": "Your account information",
+      "fullName": "Full Name",
+      "email": "Email",
+      "phone": "Phone",
+      "location": "Location",
+      "bio": "Biography",
+      "bioPlaceholder": "Tell us about yourself...",
+      "save": "Save Profile",
+      "memberSince": "Member since",
+      "joinedOn": "Joined on"
+    },
+    "notifications": {
+      "title": "Notifications",
+      "emailNotifications": "Email notifications",
+      "emailNotificationsDesc": "Receive notifications via email",
+      "pushNotifications": "Push notifications",
+      "pushNotificationsDesc": "Receive push notifications in browser",
+      "taskReminders": "Task reminders",
+      "taskRemindersDesc": "Receive reminders for upcoming tasks",
+      "weeklyUpdates": "Weekly updates",
+      "weeklyUpdatesDesc": "Weekly summary of your activity",
+      "save": "Save Notifications"
+    },
+    "security": {
+      "title": "Security",
+      "currentPassword": "Current Password",
+      "newPassword": "New Password",
+      "confirmPassword": "Confirm Password",
+      "updatePassword": "Update Password",
+      "twoFactor": "Two-Factor Authentication",
+      "enable2FA": "Enable 2FA",
+      "enable2FADesc": "Add an extra layer of security"
+    },
+    "appearance": {
+      "title": "Appearance",
+      "theme": "Theme",
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System",
+      "language": "Language",
+      "timezone": "Timezone",
+      "compactView": "Compact view",
+      "compactViewDesc": "Show more items in available space",
+      "save": "Save Appearance"
+    }
+  },
+  "tasks": {
+    "title": "Tasks",
+    "newTask": "New Task",
+    "editTask": "Edit Task",
+    "taskTitle": "Task Title",
+    "taskDescription": "Task Description",
+    "dueDate": "Due Date",
+    "assignTo": "Assign To",
+    "project": "Project",
+    "tags": "Tags",
+    "status": {
+      "todo": "To Do",
+      "inProgress": "In Progress",
+      "done": "Done",
+      "archived": "Archived"
+    },
+    "priority": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High"
+    },
+    "filters": {
+      "all": "All",
+      "status": "Status",
+      "priority": "Priority",
+      "project": "Project",
+      "assignee": "Assignee"
+    }
+  },
+  "projects": {
+    "title": "Projects",
+    "newProject": "New Project",
+    "editProject": "Edit Project",
+    "projectName": "Project Name",
+    "projectDescription": "Project Description",
+    "color": "Color",
+    "noProject": "No Project"
+  },
+  "habits": {
+    "title": "Habits",
+    "newHabit": "New Habit",
+    "habitName": "Habit Name",
+    "frequency": "Frequency",
+    "daily": "Daily",
+    "weekly": "Weekly",
+    "monthly": "Monthly"
+  },
+  "calendar": {
+    "title": "Calendar",
+    "today": "Today",
+    "month": "Month",
+    "week": "Week",
+    "day": "Day"
+  },
+  "analytics": {
+    "title": "Analytics",
+    "overview": "Overview",
+    "productivity": "Productivity",
+    "timeTracking": "Time Tracking"
+  },
+  "search": {
+    "placeholder": "Search tasks...",
+    "noResults": "No results found",
+    "filters": "Filters"
+  },
+  "languages": {
+    "fr": "Français",
+    "en": "English",
+    "es": "Español",
+    "de": "Deutsch"
+  },
+  "toast": {
+    "profileUpdated": "Profile updated successfully",
+    "profileError": "Error updating profile",
+    "notificationsUpdated": "Notification preferences saved",
+    "appearanceUpdated": "Appearance preferences saved",
+    "passwordUpdated": "Password updated successfully",
+    "passwordError": "Error updating password",
+    "passwordMismatch": "Passwords do not match",
+    "saveError": "Error saving"
+  }
+}
