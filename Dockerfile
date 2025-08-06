@@ -17,12 +17,15 @@ RUN npx prisma generate
 # Build the application
 RUN npm run build
 
-# Create database directory and initialize
+# Create database directory
 RUN mkdir -p /app/prisma
-RUN npx prisma db push --accept-data-loss
+
+# Copy start script
+COPY start.sh /app/start.sh
+RUN chmod +x /app/start.sh
 
 # Expose port
 EXPOSE 3000
 
 # Start the application
-CMD ["npm", "start"] 
+CMD ["/app/start.sh"] 
