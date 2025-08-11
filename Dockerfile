@@ -26,9 +26,11 @@ RUN npm run build
 ENV NODE_ENV=production
 ENV HOSTNAME=0.0.0.0
 ENV PORT=3000
+# Fallback si DATABASE_URL n'est pas fourni par l'environnement Render
+ENV DATABASE_URL=file:./dev.db
 
 # Exposer le port
 EXPOSE 3000
 
-# Commande de démarrage
-CMD ["npm", "run", "start"]
+# Commande de démarrage (appliquer le schéma Prisma avant de démarrer)
+CMD ["sh", "-c", "npx prisma db push && npm run start"]
