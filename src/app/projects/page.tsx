@@ -3,6 +3,9 @@
 import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "@/components/ui/context-menu"
+import Link from "next/link"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
@@ -48,6 +51,8 @@ export default function ProjectsPage() {
   const [loading, setLoading] = useState(true)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [editingProject, setEditingProject] = useState<Project | null>(null)
+  const [workspaces, setWorkspaces] = useState<Array<{ id: string; name: string }>>([])
+  const [selectedWorkspace, setSelectedWorkspace] = useState<string>("")
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -55,12 +60,25 @@ export default function ProjectsPage() {
   })
 
   useEffect(() => {
-    fetchProjects()
+    ;(async () => {
+      try {
+        const wsRes = await fetch('/api/workspaces')
+        if (wsRes.ok) {
+          const ws = await wsRes.json()
+          setWorkspaces(ws.map((w: any) => ({ id: w.id, name: w.name })))
+          if (ws.length > 0) setSelectedWorkspace(ws[0].id)
+        }
+      } catch {}
+    })()
   }, [])
+
+  useEffect(() => {
+    fetchProjects()
+  }, [selectedWorkspace])
 
   const fetchProjects = async () => {
     try {
-      const response = await fetch("/api/projects")
+      const response = await fetch(selectedWorkspace ? `/api/projects?workspaceId=${selectedWorkspace}` : "/api/projects")
       if (response.ok) {
         const data = await response.json()
         setProjects(data)
@@ -165,6 +183,17 @@ export default function ProjectsPage() {
             Gérez vos projets et organisez vos tâches par catégorie
           </p>
         </div>
+        <div className="flex items-center gap-2">
+          <Select value={selectedWorkspace} onValueChange={setSelectedWorkspace}>
+            <SelectTrigger className="w-56">
+              <SelectValue placeholder="Sélectionner un workspace" />
+            </SelectTrigger>
+            <SelectContent>
+              {workspaces.map(w => (
+                <SelectItem key={w.id} value={w.id}>{w.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button className="gap-2" onClick={resetForm}>
@@ -238,6 +267,7 @@ export default function ProjectsPage() {
             </form>
           </DialogContent>
         </Dialog>
+        </div>
       </div>
 
       {/* Projects Grid */}
@@ -254,7 +284,9 @@ export default function ProjectsPage() {
           </Card>
         ) : (
           projects.map((project) => (
-            <Card key={project.id} className="hover:shadow-md transition-shadow">
+            <ContextMenu key={project.id}>
+              <ContextMenuTrigger>
+                <Card className="hover:shadow-md transition-shadow">
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-2">
@@ -264,7 +296,7 @@ export default function ProjectsPage() {
                     />
                     <CardTitle className="text-lg">{project.name}</CardTitle>
                   </div>
-                  <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1">
                     <Button
                       variant="ghost"
                       size="sm"
@@ -281,6 +313,9 @@ export default function ProjectsPage() {
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
+                  <Button asChild variant="outline" size="sm">
+                    <Link href={`/projects/${project.id}`}>Ouvrir</Link>
+                  </Button>
                   </div>
                 </div>
                 {project.description && (
@@ -343,6 +378,16 @@ export default function ProjectsPage() {
                 </div>
               </CardContent>
             </Card>
+              </ContextMenuTrigger>
+              <ContextMenuContent>
+                <ContextMenuItem asChild>
+                  <Link href={`/projects/${project.id}`}>Ouvrir</Link>
+                </ContextMenuItem>
+                <ContextMenuItem onClick={() => handleEdit(project)}>Renommer / Modifier</ContextMenuItem>
+                <ContextMenuItem onClick={() => navigator.clipboard.writeText(project.id)}>Copier l'ID</ContextMenuItem>
+                <ContextMenuItem onClick={() => handleDelete(project.id)} className="text-destructive">Supprimer</ContextMenuItem>
+              </ContextMenuContent>
+            </ContextMenu>
           ))
         )}
       </div>

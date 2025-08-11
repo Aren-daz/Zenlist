@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { z } from "zod"
+import { getCurrentUser } from "@/lib/auth"
 
 const createProjectSchema = z.object({
   name: z.string().min(1, "Le nom est requis"),
@@ -18,6 +19,15 @@ const updateProjectSchema = z.object({
 // GET /api/projects - Récupérer tous les projets
 export async function GET(request: NextRequest) {
   try {
+    const user = await getCurrentUser()
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
+    const { searchParams } = new URL(request.url)
+    const workspaceId = searchParams.get('workspaceId') || undefined
+
+    // Limiter aux projets des workspaces où l'utilisateur est membre
     const projects = await db.project.findMany({
       include: {
         workspace: {
@@ -29,6 +39,19 @@ export async function GET(request: NextRequest) {
         _count: {
           select: { tasks: true }
         }
+      },
+      where: {
+        AND: [
+          workspaceId ? { workspaceId } : {},
+          {
+            workspace: {
+              OR: [
+                { ownerId: user.id },
+                { members: { some: { userId: user.id } } }
+              ]
+            }
+          }
+        ]
       },
       orderBy: {
         createdAt: "desc"
@@ -65,32 +88,28 @@ export async function GET(request: NextRequest) {
 // POST /api/projects - Créer un nouveau projet
 export async function POST(request: NextRequest) {
   try {
+    const user = await getCurrentUser()
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
     const body = await request.json()
     const validatedData = createProjectSchema.parse(body)
 
     // Si aucun workspaceId n'est fourni, créer ou utiliser un workspace par défaut
     let workspaceId = validatedData.workspaceId
     if (!workspaceId) {
-      let defaultWorkspace = await db.workspace.findFirst()
+      let defaultWorkspace = await db.workspace.findFirst({ where: { ownerId: user.id } })
       if (!defaultWorkspace) {
-        // Créer un utilisateur par défaut d'abord
-        let defaultUser = await db.user.findFirst()
-        if (!defaultUser) {
-          defaultUser = await db.user.create({
-            data: {
-              id: 'user-1',
-              email: 'default@example.com',
-              name: 'Default User',
-            },
-          })
-        }
-        
         defaultWorkspace = await db.workspace.create({
           data: {
-            name: 'Default Workspace',
+            name: `${user.name ?? 'Mon'} Workspace`,
             description: 'Workspace par défaut',
-            ownerId: defaultUser.id,
+            ownerId: user.id,
           },
+        })
+        await db.workspaceMember.create({
+          data: { workspaceId: defaultWorkspace.id, userId: user.id, role: 'ADMIN' }
         })
       }
       workspaceId = defaultWorkspace.id

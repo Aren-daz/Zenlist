@@ -31,6 +31,7 @@ declare module "next-auth/jwt" {
 }
 
 export const authOptions: AuthOptions = {
+  secret: process.env.NEXTAUTH_SECRET,
   adapter: PrismaAdapter(db),
   providers: [
     CredentialsProvider({
@@ -78,14 +79,22 @@ export const authOptions: AuthOptions = {
   },
   callbacks: {
     async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id
-      }
+      // Ne stocker que l'ID utilisateur dans le JWT (évite les cookies trop gros)
+      if (user) token.id = (user as any).id
       return token
     },
     async session({ session, token }) {
       if (token && session.user) {
         session.user.id = token.id
+        // Charger les infos utilisateur pour la session (renvoyées dans la réponse, pas stockées en cookie)
+        try {
+          const u = await db.user.findUnique({ where: { id: String(token.id) }, select: { name: true, email: true, avatar: true } })
+          if (u) {
+            session.user.name = u.name
+            session.user.email = u.email
+            session.user.image = u.avatar || null
+          }
+        } catch {}
       }
       return session
     }
@@ -95,3 +104,8 @@ export const authOptions: AuthOptions = {
 const handler = NextAuth(authOptions)
 
 export { handler as GET, handler as POST }
+
+// Assure un runtime Node (Prisma non compatible Edge) et évite tout cache
+export const runtime = "nodejs"
+export const dynamic = "force-dynamic"
+export const fetchCache = "force-no-store"

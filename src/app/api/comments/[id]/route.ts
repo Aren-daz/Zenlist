@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { z } from "zod"
+import { getCurrentUser } from "@/lib/auth"
 
 const updateCommentSchema = z.object({
   content: z.string().min(1, "Le contenu est requis"),
@@ -15,6 +16,10 @@ interface RouteParams {
 // GET /api/comments/[id] - Récupérer un commentaire spécifique
 export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
+    const user = await getCurrentUser()
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
     const { id } = await params
     const comment = await db.comment.findUnique({
       where: { id },
@@ -48,6 +53,10 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 // PUT /api/comments/[id] - Mettre à jour un commentaire
 export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
+    const user = await getCurrentUser()
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
     const { id } = await params
     const body = await request.json()
     const validatedData = updateCommentSchema.parse(body)
@@ -95,6 +104,10 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 // DELETE /api/comments/[id] - Supprimer un commentaire
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
+    const user = await getCurrentUser()
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
     const { id } = await params
     const existingComment = await db.comment.findUnique({
       where: { id }

@@ -1,31 +1,33 @@
+# Dockerfile pour Zenlist avec SQLite
 FROM node:18-alpine
 
+# Installer les dépendances nécessaires
+RUN apk add --no-cache libc6-compat sqlite
+
+# Définir le répertoire de travail
 WORKDIR /app
 
-# Copy package files
+# Copier les fichiers de dépendances
 COPY package*.json ./
+COPY prisma ./prisma/
 
-# Install dependencies
-RUN npm install
+# Installer les dépendances
+RUN npm ci
 
-# Copy source code
+# Copier le code source
 COPY . .
 
-# Generate Prisma client
+# Générer le client Prisma
 RUN npx prisma generate
 
-# Build the application
+# Construire l'application
 RUN npm run build
 
-# Create database directory
-RUN mkdir -p /app/prisma
+# Rendre le script de démarrage exécutable
+RUN chmod +x start.sh
 
-# Copy start script
-COPY start.sh /app/start.sh
-RUN chmod +x /app/start.sh
-
-# Expose port
+# Exposer le port
 EXPOSE 3000
 
-# Start the application
-CMD ["/app/start.sh"] 
+# Commande de démarrage
+CMD ["./start.sh"] 

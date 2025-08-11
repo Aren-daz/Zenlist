@@ -21,7 +21,13 @@ export async function GET(request: NextRequest) {
     const createdBy = searchParams.get("createdBy")
 
     // Construire la requête de recherche
-    const whereConditions: any = {}
+    const whereConditions: any = {
+      OR: [
+        { creator: { id: user.id } },
+        { assignee: { id: user.id } },
+        { project: { workspace: { OR: [ { ownerId: user.id }, { members: { some: { userId: user.id } } } ] } } },
+      ],
+    }
 
     // Recherche textuelle dans le titre et la description
     if (query) {

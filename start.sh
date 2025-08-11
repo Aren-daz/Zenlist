@@ -1,9 +1,19 @@
-#!/bin/sh
+#!/bin/bash
 
-# Initialize database
-echo "Initializing database..."
-npx prisma db push --accept-data-loss
+# Script de démarrage pour Zenlist sur Render
+echo "🚀 Démarrage de Zenlist..."
 
-# Start the application
-echo "Starting application..."
+# Créer le répertoire prisma s'il n'existe pas
+mkdir -p prisma
+
+# Initialiser la base de données SQLite
+echo "📊 Initialisation de la base de données..."
+npx prisma db push
+
+# Générer le client Prisma
+echo "🔧 Génération du client Prisma..."
+npx prisma generate
+
+# Démarrer l'application
+echo "🌐 Démarrage du serveur..."
 npm start 

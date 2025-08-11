@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { z } from "zod"
+import { getCurrentUser } from "@/lib/auth"
 
 const createTaskSchema = z.object({
   title: z.string().min(1, "Le titre est requis"),
@@ -27,13 +28,23 @@ const updateTaskSchema = z.object({
 // GET /api/tasks - Récupérer toutes les tâches
 export async function GET(request: NextRequest) {
   try {
+    const user = await getCurrentUser()
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
     const { searchParams } = new URL(request.url)
     const status = searchParams.get("status")
     const priority = searchParams.get("priority")
     const projectId = searchParams.get("projectId")
     const assignedTo = searchParams.get("assignedTo")
 
-    const where: any = {}
+    const where: any = {
+      OR: [
+        { creator: { id: user.id } },
+        { assignee: { id: user.id } },
+        { project: { workspace: { OR: [ { ownerId: user.id }, { members: { some: { userId: user.id } } } ] } } },
+      ],
+    }
     
     if (status) where.status = status
     if (priority) where.priority = priority
@@ -82,6 +93,10 @@ export async function GET(request: NextRequest) {
 // POST /api/tasks - Créer une nouvelle tâche
 export async function POST(request: NextRequest) {
   try {
+    const user = await getCurrentUser()
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
     const body = await request.json()
     
     const validatedData = createTaskSchema.parse(body)
@@ -98,37 +113,24 @@ export async function POST(request: NextRequest) {
         )
       }
     } else {
-      // Créer un projet par défaut si aucun projet n'est spécifié
-      let defaultProject = await db.project.findFirst()
+      // Créer/trouver un projet par défaut de l'utilisateur si aucun projet n'est spécifié
+      let defaultProject = await db.project.findFirst({
+        where: { workspace: { OR: [ { ownerId: user.id }, { members: { some: { userId: user.id } } } ] } },
+        orderBy: { createdAt: 'asc' },
+      })
       if (!defaultProject) {
-        // Créer un workspace par défaut d'abord
-        let defaultWorkspace = await db.workspace.findFirst()
-        if (!defaultWorkspace) {
-          // Créer un utilisateur par défaut d'abord
-          let defaultUser = await db.user.findFirst()
-          if (!defaultUser) {
-            defaultUser = await db.user.create({
-              data: {
-                id: 'user-1',
-                email: 'default@example.com',
-                name: 'Default User',
-              },
-            })
-          }
-          
-          defaultWorkspace = await db.workspace.create({
-            data: {
-              name: 'Default Workspace',
-              description: 'Workspace par défaut',
-              ownerId: defaultUser.id,
-            },
-          })
-        }
-        
-        // Créer un projet par défaut
+        // Créer un workspace par défaut pour l'utilisateur puis un projet
+        const defaultWorkspace = await db.workspace.create({
+          data: {
+            name: `${user.name ?? 'Mon'} Workspace`,
+            description: 'Workspace par défaut',
+            ownerId: user.id,
+          },
+        })
+        await db.workspaceMember.create({ data: { workspaceId: defaultWorkspace.id, userId: user.id, role: 'ADMIN' } })
         defaultProject = await db.project.create({
           data: {
-            name: 'Projet par défaut',
+            name: 'Tâches personnelles',
             description: 'Projet par défaut',
             workspaceId: defaultWorkspace.id,
           },
@@ -150,20 +152,6 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Vérifier si l'utilisateur créateur existe
-    let creatorUser = await db.user.findUnique({
-      where: { id: "user-1" }
-    })
-    if (!creatorUser) {
-      creatorUser = await db.user.create({
-        data: {
-          id: 'user-1',
-          email: 'creator@example.com',
-          name: 'Creator User',
-        },
-      })
-    }
-
     const task = await db.task.create({
       data: {
         title: validatedData.title,
@@ -174,7 +162,7 @@ export async function POST(request: NextRequest) {
         projectId: validatedData.projectId,
         assignedTo: validatedData.assignedTo,
         parent_id: validatedData.parent_id,
-        created_by: "user-1", // TODO: Récupérer l'ID utilisateur depuis l'authentification
+        created_by: user.id,
       },
       include: {
         project: true,

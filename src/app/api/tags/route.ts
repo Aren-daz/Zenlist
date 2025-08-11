@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { z } from "zod"
+import { getCurrentUser } from "@/lib/auth"
 
 const createTagSchema = z.object({
   name: z.string().min(1, "Le nom est requis"),
@@ -16,6 +17,11 @@ const updateTagSchema = z.object({
 // GET /api/tags - Récupérer tous les tags
 export async function GET(request: NextRequest) {
   try {
+    const user = await getCurrentUser()
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
     const tags = await db.tag.findMany({
       include: {
         workspace: {
@@ -30,6 +36,14 @@ export async function GET(request: NextRequest) {
         },
         _count: {
           select: { tasks: true }
+        }
+      },
+      where: {
+        workspace: {
+          OR: [
+            { ownerId: user.id },
+            { members: { some: { userId: user.id } } }
+          ]
         }
       },
       orderBy: {
@@ -50,33 +64,26 @@ export async function GET(request: NextRequest) {
 // POST /api/tags - Créer un nouveau tag
 export async function POST(request: NextRequest) {
   try {
+    const user = await getCurrentUser()
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
     const body = await request.json()
     const validatedData = createTagSchema.parse(body)
 
     // Si aucun workspaceId n'est fourni, créer ou utiliser un workspace par défaut
     let workspaceId = validatedData.workspaceId
     if (!workspaceId) {
-      let defaultWorkspace = await db.workspace.findFirst()
+      let defaultWorkspace = await db.workspace.findFirst({ where: { ownerId: user.id } })
       if (!defaultWorkspace) {
-        // Créer un utilisateur par défaut d'abord
-        let defaultUser = await db.user.findFirst()
-        if (!defaultUser) {
-          defaultUser = await db.user.create({
-            data: {
-              id: 'user-1',
-              email: 'default@example.com',
-              name: 'Default User',
-            },
-          })
-        }
-        
         defaultWorkspace = await db.workspace.create({
           data: {
-            name: 'Default Workspace',
+            name: `${user.name ?? 'Mon'} Workspace`,
             description: 'Workspace par défaut',
-            ownerId: defaultUser.id,
+            ownerId: user.id,
           },
         })
+        await db.workspaceMember.create({ data: { workspaceId: defaultWorkspace.id, userId: user.id, role: 'ADMIN' } })
       }
       workspaceId = defaultWorkspace.id
     }

@@ -242,7 +242,7 @@ export function GlobalSearch({ isOpen, onClose }: GlobalSearchProps) {
           <div className="flex items-center gap-2">
             <Search className="w-5 h-5 text-muted-foreground" />
             <Input
-              placeholder="Rechercher des tâches, projets, commentaires..."
+              placeholder="Search tasks, projects, comments..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={(e) => {

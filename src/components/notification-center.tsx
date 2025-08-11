@@ -41,7 +41,9 @@ export function NotificationCenter() {
   useEffect(() => {
     if (session?.user?.id) {
       // Initialize socket connection
-      const newSocket = io(process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3000", {
+      const socketBase = process.env.NEXT_PUBLIC_SOCKET_URL || window.location.origin
+      const newSocket = io(socketBase, {
+        path: "/api/socketio",
         auth: {
           userId: session.user.id
         }
@@ -121,6 +123,22 @@ export function NotificationCenter() {
     }
   }
 
+  const handleNotificationClick = async (n: Notification) => {
+    try {
+      // Si c'est une invitation, appeler l'acceptation puis marquer comme lu
+      if ((n as any).type === 'invite_workspace' || (n as any).type === 'invite_project') {
+        const data = typeof n.data === 'string' ? JSON.parse(n.data) : n.data || {}
+        if (data?.token) {
+          const res = await fetch(`/api/invitations/${data.token}/accept`, { method: 'POST' })
+          if (res.ok) {
+            await markAsRead(n.id)
+            // Recharger la liste de projets/workspaces côté UI si besoin
+          }
+        }
+      }
+    } catch {}
+  }
+
   const getNotificationIcon = (type: string) => {
     switch (type) {
       case "task_assigned":
@@ -169,7 +187,7 @@ export function NotificationCenter() {
       </Button>
 
       {isOpen && (
-        <Card className="absolute right-0 top-12 w-80 z-50 shadow-lg">
+        <Card className="fixed right-2 top-14 sm:right-4 sm:top-16 w-[92vw] sm:w-80 max-w-[92vw] z-50 shadow-lg">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg">Notifications</CardTitle>
@@ -199,7 +217,7 @@ export function NotificationCenter() {
             </CardDescription>
           </CardHeader>
           <CardContent className="p-0">
-            <ScrollArea className="h-96">
+            <ScrollArea className="max-h-[80vh] h-[28rem]">
               {notifications.length === 0 ? (
                 <div className="p-6 text-center text-muted-foreground">
                   <Bell className="w-12 h-12 mx-auto mb-4 opacity-50" />
@@ -213,7 +231,7 @@ export function NotificationCenter() {
                       className={`p-4 border-b last:border-b-0 hover:bg-muted/50 cursor-pointer transition-colors ${
                         !notification.read ? "bg-muted/30" : ""
                       }`}
-                      onClick={() => !notification.read && markAsRead(notification.id)}
+                      onClick={() => handleNotificationClick(notification)}
                     >
                       <div className="flex items-start gap-3">
                         <div className="flex-shrink-0 mt-0.5">

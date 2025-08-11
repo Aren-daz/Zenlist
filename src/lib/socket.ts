@@ -1,18 +1,22 @@
 import { Server } from 'socket.io';
 
+let ioInstance: Server | null = null
+
 export const setupSocket = (io: Server) => {
+  ioInstance = io
   io.on('connection', (socket) => {
     console.log('Client connected:', socket.id);
     
-    // Handle messages
-    socket.on('message', (msg: { text: string; senderId: string }) => {
-      // Echo: broadcast message only the client who send the message
-      socket.emit('message', {
-        text: `Echo: ${msg.text}`,
-        senderId: 'system',
-        timestamp: new Date().toISOString(),
-      });
-    });
+    // Rooms par projet
+    socket.on('project:join', ({ projectId }: { projectId: string }) => {
+      if (projectId) socket.join(`project:${projectId}`)
+    })
+
+    // Indicateur de frappe
+    socket.on('project:typing', ({ projectId, userId, name, isTyping }: { projectId: string; userId: string; name?: string; isTyping: boolean }) => {
+      if (!projectId || !userId) return
+      socket.to(`project:${projectId}`).emit('project:typing', { userId, name, isTyping })
+    })
 
     // Handle disconnect
     socket.on('disconnect', () => {
@@ -27,3 +31,5 @@ export const setupSocket = (io: Server) => {
     });
   });
 };
+
+export const getIO = () => ioInstance

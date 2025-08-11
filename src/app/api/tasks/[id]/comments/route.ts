@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { z } from "zod"
+import { getCurrentUser } from "@/lib/auth"
 
 const createCommentSchema = z.object({
   content: z.string().min(1, "Le contenu est requis"),
@@ -15,6 +16,10 @@ interface RouteParams {
 // GET /api/tasks/[id]/comments - Récupérer tous les commentaires d'une tâche
 export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
+    const user = await getCurrentUser()
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
     const { id } = await params
     
     // Vérifier si la tâche existe
@@ -54,6 +59,10 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 // POST /api/tasks/[id]/comments - Créer un nouveau commentaire
 export async function POST(request: NextRequest, { params }: RouteParams) {
   try {
+    const user = await getCurrentUser()
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
     const { id } = await params
     const body = await request.json()
     const validatedData = createCommentSchema.parse(body)
@@ -74,7 +83,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       data: {
         content: validatedData.content,
         taskId: id,
-        userId: "user-1", // TODO: Récupérer l'ID utilisateur depuis l'authentification
+        userId: user.id,
       },
       include: {
         user: {

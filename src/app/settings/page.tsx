@@ -34,7 +34,7 @@ import {
 import Link from "next/link"
 
 export default function SettingsPage() {
-  const { data: session, status } = useSession()
+  const { data: session, status, update } = useSession()
   const { theme, setTheme } = useTheme()
   const { changeLocale, isPending } = useChangeLocale()
   const [isLoading, setIsLoading] = useState(false)
@@ -91,6 +91,29 @@ export default function SettingsPage() {
       theme: theme || "light"
     }))
   }, [session, theme])
+
+  // Hydrater depuis la base (persistance) au montage / changement d'auth
+  useEffect(() => {
+    let mounted = true
+    const loadProfile = async () => {
+      try {
+        const res = await fetch('/api/users/profile', { cache: 'no-store' })
+        if (!res.ok) return
+        const u = await res.json()
+        if (!mounted) return
+        setProfileData(prev => ({
+          ...prev,
+          name: u?.name || prev.name,
+          email: u?.email || prev.email,
+          phone: u?.phone || "",
+          location: u?.location || "",
+          bio: u?.bio || "",
+        }))
+      } catch {}
+    }
+    loadProfile()
+    return () => { mounted = false }
+  }, [status])
 
   if (status === "loading") {
     return (
@@ -245,9 +268,25 @@ export default function SettingsPage() {
                     {session?.user?.name?.[0] || session?.user?.email?.[0] || "U"}
                   </AvatarFallback>
                 </Avatar>
-                <Button size="sm" className="absolute bottom-0 right-0 rounded-full w-8 h-8 p-0">
-                  <Camera className="w-4 h-4" />
-                </Button>
+                <form className="absolute bottom-0 right-0" onChange={async (e:any)=>{
+                  const input = e.currentTarget.querySelector('input[type=file]') as HTMLInputElement
+                  if (!input?.files?.[0]) return
+                  const fd = new FormData()
+                  fd.append('file', input.files[0])
+                  const res = await fetch('/api/users/avatar', { method: 'POST', body: fd })
+                  if (res.ok) {
+                    toast.success('Avatar mis à jour')
+                    try { await update() } catch {}
+                    location.reload()
+                  } else {
+                    toast.error('Erreur lors du téléchargement')
+                  }
+                }}>
+                  <input type="file" accept="image/*" className="hidden" id="avatar-input" />
+                  <label htmlFor="avatar-input" className="inline-flex items-center justify-center rounded-full w-8 h-8 bg-primary text-primary-foreground cursor-pointer">
+                    <Camera className="w-4 h-4" />
+                  </label>
+                </form>
               </div>
               <div className="text-center">
                 <h3 className="font-semibold">{session?.user?.name || "Utilisateur"}</h3>
@@ -447,21 +486,6 @@ export default function SettingsPage() {
                   </Button>
                 </div>
                 <Separator />
-                <div className="space-y-4">
-                  <h4 className="text-sm font-medium">Authentification à deux facteurs</h4>
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-0.5">
-                      <Label>Activer 2FA</Label>
-                      <p className="text-sm text-muted-foreground">
-                        Ajoutez une couche de sécurité supplémentaire
-                      </p>
-                    </div>
-                    <Switch 
-                      checked={securityData.twoFactorEnabled}
-                      onCheckedChange={(checked) => setSecurityData(prev => ({ ...prev, twoFactorEnabled: checked }))}
-                    />
-                  </div>
-                </div>
               </TabsContent>
 
               <TabsContent value="appearance" className="space-y-4">

@@ -15,6 +15,6 @@ export default function middleware(request: NextRequest) {
 }
  
 export const config = {
-  // Matcher pour exclure les fichiers qui ne doivent pas être traités
-  matcher: ['/((?!api|_next|_vercel|.*\\..*).*)']
+  // Exclure les routes d'auth NextAuth et toutes les API
+  matcher: ['/((?!api|_next|_vercel|.*\\..*|api/auth).*)']
 };

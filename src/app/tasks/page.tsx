@@ -276,6 +276,14 @@ export default function TasksPage() {
   )
 
   useEffect(() => {
+    // ouvrir la modale si query ?openNew=1
+    if (typeof window !== 'undefined') {
+      const url = new URL(window.location.href)
+      if (url.searchParams.get('openNew') === '1') {
+        resetForm()
+        setIsDialogOpen(true)
+      }
+    }
     fetchTasks()
     fetchProjects()
     fetchTags()
@@ -860,23 +868,40 @@ export default function TasksPage() {
 
   return (
     <div className="p-6 space-y-6">
+      {/* Raccourci clavier global: Ctrl/Cmd+N */}
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `
+            (function(){
+              document.addEventListener('keydown', function(e){
+                var key = (e.key || '').toLowerCase();
+                if((e.ctrlKey||e.metaKey) && key==='n'){
+                  e.preventDefault();
+                  var btn = document.getElementById('new-task-button');
+                  if(btn){ btn.click(); }
+                }
+              });
+            })();
+          `,
+        }}
+      />
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Mes tâches</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Tasks</h1>
           <p className="text-muted-foreground">
             Gérez toutes vos tâches et restez organisé
           </p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="gap-2" onClick={resetForm}>
+            <Button className="gap-2" onClick={resetForm} id="new-task-button">
               <Plus className="w-4 h-4" />
-              Nouvelle tâche
+              New Task
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[425px]">
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} id="new-task-form">
               <DialogHeader>
                 <DialogTitle>
                   {editingTask ? "Modifier la tâche" : "Créer une nouvelle tâche"}
@@ -1021,7 +1046,7 @@ export default function TasksPage() {
         <TabsContent value="list" className="space-y-4">
           <div className="grid gap-4">
             {tasks.length === 0 ? (
-              <Card>
+              <Card role="alert" aria-live="polite">
                 <CardContent className="flex flex-col items-center justify-center py-12">
                   <CheckCircle className="w-12 h-12 text-muted-foreground mb-4" />
                   <h3 className="text-lg font-semibold mb-2">Aucune tâche</h3>
@@ -1032,7 +1057,15 @@ export default function TasksPage() {
               </Card>
             ) : (
               tasks.map((task) => (
-                <Card key={task.id} className="hover:shadow-md transition-shadow">
+                <Card key={task.id} className="hover:shadow-md transition-shadow" onContextMenu={(e)=>{
+                  e.preventDefault();
+                  const menu = document.getElementById(`task-menu-${task.id}`)
+                  if (menu) {
+                    menu.style.display = 'block'
+                    menu.style.left = `${e.clientX}px`
+                    menu.style.top = `${e.clientY}px`
+                  }
+                }}>
                   <CardContent className="p-6">
                     <div className="flex items-start justify-between">
                       <div className="flex-1 space-y-2">
@@ -1115,6 +1148,11 @@ export default function TasksPage() {
                       </div>
                     </div>
                   </CardContent>
+                  {/* Simple menu contextuel natif minimal */}
+                  <div id={`task-menu-${task.id}`} className="fixed z-[1000] hidden bg-popover border rounded-md shadow-md text-sm" onMouseLeave={(e)=>{ (e.currentTarget as HTMLDivElement).style.display='none' }}>
+                    <button className="block w-full text-left px-3 py-2 hover:bg-accent" onClick={()=>{ handleEdit(task); (document.getElementById(`task-menu-${task.id}`) as HTMLDivElement).style.display='none' }}>Modifier</button>
+                    <button className="block w-full text-left px-3 py-2 hover:bg-accent" onClick={()=>{ handleDelete(task.id); (document.getElementById(`task-menu-${task.id}`) as HTMLDivElement).style.display='none' }}>Supprimer</button>
+                  </div>
                 </Card>
               ))
             )}

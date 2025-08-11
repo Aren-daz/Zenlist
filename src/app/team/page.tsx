@@ -62,6 +62,7 @@ export default function TeamPage() {
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([])
   const [teamActivities, setTeamActivities] = useState<TeamActivity[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [invite, setInvite] = useState({ email: "", role: "member" })
 
   useEffect(() => {
     if (status === "authenticated") {
@@ -72,14 +73,33 @@ export default function TeamPage() {
   const loadTeamData = async () => {
     setIsLoading(true)
     try {
-      // Load team members
-      const membersResponse = await fetch("/api/team/members")
-      if (membersResponse.ok) {
-        const members = await membersResponse.json()
-        setTeamMembers(members)
+      // Workspaces de l'utilisateur, prendre le premier
+      const workspacesRes = await fetch("/api/workspaces")
+      let workspaceId: string | null = null
+      if (workspacesRes.ok) {
+        const workspaces = await workspacesRes.json()
+        workspaceId = workspaces?.[0]?.id || null
+      }
+      if (workspaceId) {
+        const membersResponse = await fetch(`/api/workspaces/${workspaceId}/members`)
+        if (membersResponse.ok) {
+          const members = await membersResponse.json()
+          setTeamMembers(members.map((m: any) => ({
+            id: m.user.id,
+            name: m.user.name || m.user.email,
+            email: m.user.email,
+            role: m.role,
+            avatar: m.user.avatar,
+            status: "offline",
+            lastActive: "récemment",
+            tasksAssigned: 0,
+            tasksCompleted: 0,
+            joinDate: new Date(m.joinedAt).toISOString(),
+          })))
+        }
       }
 
-      // Load team activities
+      // Load team activities (placeholder)
       const activitiesResponse = await fetch("/api/team/activities")
       if (activitiesResponse.ok) {
         const activities = await activitiesResponse.json()
@@ -179,10 +199,38 @@ export default function TeamPage() {
             <Search className="w-4 h-4" />
             Rechercher
           </Button>
-          <Button className="gap-2">
-            <UserPlus className="w-4 h-4" />
-            Inviter un membre
-          </Button>
+          <form className="flex gap-2" onSubmit={async (e) => {
+            e.preventDefault()
+            try {
+              const workspacesRes = await fetch("/api/workspaces")
+              const workspaces = workspacesRes.ok ? await workspacesRes.json() : []
+              const wid = workspaces?.[0]?.id
+              if (!wid) return
+              const res = await fetch(`/api/workspaces/${wid}/members`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: invite.email, role: invite.role.toUpperCase() })
+              })
+              if (res.ok) {
+                setInvite({ email: "", role: "member" })
+                loadTeamData()
+              }
+            } catch {}
+          }}>
+            <Input placeholder="email@exemple.com" value={invite.email} onChange={(e)=>setInvite(v=>({...v,email:e.target.value}))} />
+            <Select value={invite.role} onValueChange={(v)=>setInvite(s=>({...s, role: v}))}>
+              <SelectTrigger className="w-32"><SelectValue placeholder="Rôle" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="admin">Admin</SelectItem>
+                <SelectItem value="member">Membre</SelectItem>
+                <SelectItem value="viewer">Visualisateur</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button type="submit" className="gap-2">
+              <UserPlus className="w-4 h-4" />
+              Inviter
+            </Button>
+          </form>
         </div>
       </div>
 
@@ -345,52 +393,7 @@ export default function TeamPage() {
         </Card>
       </div>
 
-      {/* Invite Member Modal Placeholder */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Inviter de nouveaux membres</CardTitle>
-          <CardDescription>
-            Ajoutez des membres à votre équipe pour collaborer
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input 
-                id="email" 
-                type="email"
-                placeholder="colleague@example.com"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="role">Rôle</Label>
-              <Select>
-                <SelectTrigger>
-                  <SelectValue placeholder="Sélectionner un rôle" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="admin">Admin</SelectItem>
-                  <SelectItem value="member">Membre</SelectItem>
-                  <SelectItem value="viewer">Visualisateur</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <div className="space-y-2 mt-4">
-            <Label htmlFor="message">Message personnel (optionnel)</Label>
-            <Textarea 
-              id="message" 
-              placeholder="Ajoutez un message personnel à l'invitation..."
-              rows={3}
-            />
-          </div>
-          <div className="flex gap-2 mt-4">
-            <Button>Envoyer l'invitation</Button>
-            <Button variant="outline">Annuler</Button>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Fin */}
     </div>
   )
 }
