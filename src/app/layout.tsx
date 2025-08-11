@@ -7,6 +7,7 @@ import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/s
 import { AuthProvider } from "@/components/auth-provider";
 import { ThemeProvider } from "@/components/theme-provider";
 import { IntlProvider } from "@/components/intl-provider";
+import { MobileAuthCTA } from "@/components/mobile-auth-cta";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -61,6 +62,7 @@ export default function RootLayout({
                     <div className="flex items-center gap-2 p-2 border-b md:hidden">
                       <SidebarTrigger aria-label="Ouvrir la barre latérale" />
                       <span className="text-sm font-medium">Menu</span>
+                      <MobileAuthCTA />
                     </div>
                     <main className="flex-1 overflow-auto">
                       {children}
