@@ -23,11 +23,12 @@ RUN npx prisma generate
 # Construire l'application
 RUN npm run build
 
-# Rendre le script de démarrage exécutable
-RUN chmod +x start.sh
+ENV NODE_ENV=production
+ENV HOSTNAME=0.0.0.0
+ENV PORT=3000
 
 # Exposer le port
 EXPOSE 3000
 
 # Commande de démarrage
-CMD ["./start.sh"] 
+CMD ["npm", "run", "start"]
