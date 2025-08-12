@@ -1,5 +1,4 @@
 import NextAuth, { type AuthOptions } from "next-auth"
-import { PrismaAdapter } from "@next-auth/prisma-adapter"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { db } from "@/lib/db"
 import bcrypt from "bcryptjs"
@@ -34,7 +33,6 @@ export const authOptions: AuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   // Important derrière un proxy (Render): fait confiance aux en-têtes Host/X-Forwarded-*
   trustHost: true,
-  adapter: PrismaAdapter(db),
   providers: [
     CredentialsProvider({
       name: "credentials",
@@ -43,38 +41,37 @@ export const authOptions: AuthOptions = {
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          return null
-        }
-
-        const user = await db.user.findUnique({
-          where: {
-            email: credentials.email
+        try {
+          if (!credentials?.email || !credentials?.password) {
+            return null
           }
-        })
-
-        if (!user) {
+          const user = await db.user.findUnique({ where: { email: credentials.email } })
+          if (!user) return null
+          const isPasswordValid = await bcrypt.compare(credentials.password, user.password || "")
+          if (!isPasswordValid) return null
+          return { id: user.id, email: user.email, name: user.name, image: user.avatar }
+        } catch (e) {
+          console.error("[next-auth][authorize] error:", e)
           return null
-        }
-
-        // Check password
-        const isPasswordValid = await bcrypt.compare(credentials.password, user.password || "")
-        
-        if (!isPasswordValid) {
-          return null
-        }
-
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          image: user.avatar,
         }
       }
     })
   ],
   session: {
     strategy: "jwt"
+  },
+  logger: {
+    error(code, metadata) {
+      console.error("[next-auth][error]", code, metadata)
+    },
+    warn(code) {
+      console.warn("[next-auth][warn]", code)
+    },
+    debug(code, metadata) {
+      if (process.env.NODE_ENV !== "production") {
+        console.debug("[next-auth][debug]", code, metadata)
+      }
+    }
   },
   pages: {
     signIn: "/auth/signin"
