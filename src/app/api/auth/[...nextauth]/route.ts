@@ -31,8 +31,6 @@ declare module "next-auth/jwt" {
 
 export const authOptions: AuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
-  // Important derrière un proxy (Render): fait confiance aux en-têtes Host/X-Forwarded-*
-  trustHost: true,
   providers: [
     CredentialsProvider({
       name: "credentials",
@@ -100,7 +98,8 @@ export const authOptions: AuthOptions = {
   }
 }
 
-const handler = NextAuth(authOptions)
+// Passer trustHost au handler sans l'ajouter au type AuthOptions
+const handler = NextAuth({ ...(authOptions as any), trustHost: true })
 
 export { handler as GET, handler as POST }
 
