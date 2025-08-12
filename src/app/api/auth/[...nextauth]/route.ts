@@ -32,6 +32,8 @@ declare module "next-auth/jwt" {
 
 export const authOptions: AuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
+  // Important derrière un proxy (Render): fait confiance aux en-têtes Host/X-Forwarded-*
+  trustHost: true,
   adapter: PrismaAdapter(db),
   providers: [
     CredentialsProvider({
