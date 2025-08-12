@@ -4,7 +4,7 @@ services:
     env: node
     plan: free
     buildCommand: npm install && npm run build
-    startCommand: npm start
+    startCommand: "npx prisma db push && next start -p $PORT -H 0.0.0.0"
     healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV

@@ -28,7 +28,6 @@ RUN npm run build
 
 ENV NODE_ENV=production
 ENV HOSTNAME=0.0.0.0
-ENV PORT=3000
 # Fallback si DATABASE_URL n'est pas fourni par l'environnement Render
 ENV DATABASE_URL=file:./db/custom.db
 
@@ -36,4 +35,5 @@ ENV DATABASE_URL=file:./db/custom.db
 EXPOSE 3000
 
 # Commande de démarrage (appliquer le schéma Prisma avant de démarrer)
-CMD ["sh", "-c", "npx prisma db push && npm run start"]
+# Force Next à écouter sur le PORT Render (fallback 3000) et 0.0.0.0
+CMD ["sh", "-c", "npx prisma db push && next start -p ${PORT:-3000} -H 0.0.0.0"]
