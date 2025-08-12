@@ -9,7 +9,7 @@ services:
       - key: NODE_ENV
         value: production
       - key: DATABASE_URL
-        value: "file:./prisma/prod.db"
+        value: "file:./db/custom.db"
       - key: NEXTAUTH_URL
         sync: false
       - key: NEXTAUTH_SECRET

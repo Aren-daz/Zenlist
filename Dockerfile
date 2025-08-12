@@ -17,6 +17,9 @@ RUN npm ci
 # Copier le code source
 COPY . .
 
+# Créer le dossier de base de données si on utilise un fichier custom
+RUN mkdir -p db
+
 # Générer le client Prisma
 RUN npx prisma generate
 
@@ -27,7 +30,7 @@ ENV NODE_ENV=production
 ENV HOSTNAME=0.0.0.0
 ENV PORT=3000
 # Fallback si DATABASE_URL n'est pas fourni par l'environnement Render
-ENV DATABASE_URL=file:./dev.db
+ENV DATABASE_URL=file:./db/custom.db
 
 # Exposer le port
 EXPOSE 3000
