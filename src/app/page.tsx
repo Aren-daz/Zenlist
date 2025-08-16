@@ -16,7 +16,7 @@ import { Calendar as CalendarComponent } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { CheckSquare, Clock, TrendingUp, Plus, Calendar, RefreshCw, CalendarIcon } from "lucide-react"
 import Link from "next/link"
-import { toast } from "sonner"
+import { enhancedToast } from "@/lib/enhanced-toast"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 
@@ -54,7 +54,7 @@ export default function Dashboard() {
     
     // Basic validation
     if (!formData.title.trim()) {
-      toast.error("Le titre est obligatoire")
+      enhancedToast.error("Le titre est obligatoire")
       return
     }
     
@@ -85,16 +85,16 @@ export default function Dashboard() {
       console.log("Response:", responseData) // Debug log
 
       if (response.ok) {
-        toast.success("Tâche créée avec succès")
+        enhancedToast.taskCreated(formData.title.trim())
         setIsDialogOpen(false)
         resetForm()
         loadDashboardData(true) // Refresh dashboard data
       } else {
-        toast.error(responseData.error || "Erreur lors de la création de la tâche")
+        enhancedToast.taskError()
       }
     } catch (error) {
       console.error("Error:", error) // Debug log
-      toast.error("Erreur lors de la création de la tâche")
+      enhancedToast.taskError()
     }
   }
 

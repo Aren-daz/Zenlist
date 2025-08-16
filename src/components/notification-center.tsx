@@ -279,7 +279,15 @@ export function NotificationCenter() {
             </ScrollArea>
           </CardContent>
           <div className="p-3 border-t">
-            <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="w-full justify-start gap-2"
+              onClick={() => {
+                setIsOpen(false)
+                window.location.href = '/settings?tab=notifications'
+              }}
+            >
               <Settings className="w-4 h-4" />
               Paramètres de notification
             </Button>

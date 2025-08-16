@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react"
 import { useSession } from "next-auth/react"
 import { useTheme } from "next-themes"
-import { toast } from "sonner"
 import { useTranslations } from 'next-intl'
+import { enhancedToast } from "@/lib/enhanced-toast"
 import { useChangeLocale, getCurrentLocale } from '@/lib/locale'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -38,6 +38,7 @@ export default function SettingsPage() {
   const { theme, setTheme } = useTheme()
   const { changeLocale, isPending } = useChangeLocale()
   const [isLoading, setIsLoading] = useState(false)
+  const [activeTab, setActiveTab] = useState("profile")
   
   // Traductions
   const t = useTranslations('settings')
@@ -74,6 +75,15 @@ export default function SettingsPage() {
     timezone: "europe-paris",
     compactView: false
   })
+
+  // Charger l'onglet depuis l'URL
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search)
+    const tabParam = urlParams.get('tab')
+    if (tabParam && ['profile', 'notifications', 'security', 'appearance'].includes(tabParam)) {
+      setActiveTab(tabParam)
+    }
+  }, [])
 
   // Charger les données initiales
   useEffect(() => {
@@ -156,12 +166,12 @@ export default function SettingsPage() {
       })
       
       if (response.ok) {
-        toast.success(tToast('profileUpdated'))
+        enhancedToast.settingsSaved('du profil')
       } else {
-        toast.error(tToast('profileError'))
+        enhancedToast.error('Erreur lors de la mise à jour du profil')
       }
     } catch (error) {
-      toast.error(tToast('profileError'))
+      enhancedToast.error('Erreur lors de la mise à jour du profil')
     } finally {
       setIsLoading(false)
     }
@@ -172,9 +182,9 @@ export default function SettingsPage() {
     try {
       // Sauvegarder les préférences de notifications
       localStorage.setItem('notificationSettings', JSON.stringify(notificationSettings))
-      toast.success(tToast('notificationsUpdated'))
+      enhancedToast.settingsSaved('de notifications')
     } catch (error) {
-      toast.error(tToast('saveError'))
+      enhancedToast.error('Erreur lors de la sauvegarde')
     } finally {
       setIsLoading(false)
     }
@@ -195,9 +205,9 @@ export default function SettingsPage() {
       // Sauvegarder les préférences d'apparence
       localStorage.setItem('appearanceSettings', JSON.stringify(appearanceSettings))
       
-      toast.success(tToast('appearanceUpdated'))
+      enhancedToast.settingsSaved("d'apparence")
     } catch (error) {
-      toast.error(tToast('saveError'))
+      enhancedToast.error('Erreur lors de la sauvegarde')
     } finally {
       setIsLoading(false)
     }
@@ -205,7 +215,7 @@ export default function SettingsPage() {
   
   const handleSavePassword = async () => {
     if (securityData.newPassword !== securityData.confirmPassword) {
-      toast.error(tToast('passwordMismatch'))
+      enhancedToast.error('Les mots de passe ne correspondent pas')
       return
     }
     
@@ -222,13 +232,13 @@ export default function SettingsPage() {
       })
       
       if (response.ok) {
-        toast.success(tToast('passwordUpdated'))
+        enhancedToast.success('Mot de passe mis à jour avec succès')
         setSecurityData(prev => ({ ...prev, currentPassword: "", newPassword: "", confirmPassword: "" }))
       } else {
-        toast.error(tToast('passwordError'))
+        enhancedToast.error('Erreur lors de la mise à jour du mot de passe')
       }
     } catch (error) {
-      toast.error(tToast('passwordError'))
+      enhancedToast.error('Erreur lors de la mise à jour du mot de passe')
     } finally {
       setIsLoading(false)
     }
@@ -237,17 +247,11 @@ export default function SettingsPage() {
   return (
     <div className="p-6 space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">{t('title')}</h1>
-          <p className="text-muted-foreground">
-            {t('subtitle')}
-          </p>
-        </div>
-        <Button onClick={handleSaveProfile} disabled={isLoading} className="gap-2">
-          <Save className="w-4 h-4" />
-          {isLoading ? tCommon('saving') : t('saveAll')}
-        </Button>
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">{t('title')}</h1>
+        <p className="text-muted-foreground">
+          {t('subtitle')}
+        </p>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
@@ -275,11 +279,11 @@ export default function SettingsPage() {
                   fd.append('file', input.files[0])
                   const res = await fetch('/api/users/avatar', { method: 'POST', body: fd })
                   if (res.ok) {
-                    toast.success('Avatar mis à jour')
+                    enhancedToast.success('Avatar mis à jour avec succès')
                     try { await update() } catch {}
                     location.reload()
                   } else {
-                    toast.error('Erreur lors du téléchargement')
+                    enhancedToast.error('Erreur lors du téléchargement')
                   }
                 }}>
                   <input type="file" accept="image/*" className="hidden" id="avatar-input" />
@@ -317,7 +321,7 @@ export default function SettingsPage() {
         {/* Settings Tabs */}
         <Card className="lg:col-span-2">
           <CardContent className="p-6">
-            <Tabs defaultValue="profile" className="w-full">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <TabsList className="grid w-full grid-cols-4">
                 <TabsTrigger value="profile" className="gap-2">
                   <User className="w-4 h-4" />

@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { CalendarIcon, Plus, Edit, Trash2, CheckCircle, Clock, AlertCircle, Archive, FolderKanban, List, LayoutGrid, Calendar, Tag, X, MessageCircle, Send } from "lucide-react"
-import { toast } from "sonner"
+import { enhancedToast } from "@/lib/enhanced-toast"
 import {
   DndContext,
   DragEndEvent,
@@ -296,10 +296,10 @@ export default function TasksPage() {
         const data = await response.json()
         setTasks(data)
       } else {
-        toast.error("Erreur lors de la récupération des tâches")
+        enhancedToast.error("Erreur lors de la récupération des tâches")
       }
     } catch (error) {
-      toast.error("Erreur lors de la récupération des tâches")
+      enhancedToast.error("Erreur lors de la récupération des tâches")
     } finally {
       setLoading(false)
     }
@@ -352,15 +352,19 @@ export default function TasksPage() {
       })
 
       if (response.ok) {
-        toast.success(editingTask ? "Tâche mise à jour avec succès" : "Tâche créée avec succès")
+        if (editingTask) {
+          enhancedToast.taskUpdated(formData.title.trim())
+        } else {
+          enhancedToast.taskCreated(formData.title.trim())
+        }
         setIsDialogOpen(false)
         resetForm()
         fetchTasks()
       } else {
-        toast.error("Erreur lors de l'opération")
+        enhancedToast.taskError()
       }
     } catch (error) {
-      toast.error("Erreur lors de l'opération")
+      enhancedToast.taskError()
     }
   }
 
@@ -386,13 +390,13 @@ export default function TasksPage() {
         })
 
         if (response.ok) {
-          toast.success("Tâche supprimée avec succès")
+          enhancedToast.taskDeleted()
           fetchTasks()
         } else {
-          toast.error("Erreur lors de la suppression")
+          enhancedToast.error("Erreur lors de la suppression")
         }
       } catch (error) {
-        toast.error("Erreur lors de la suppression")
+        enhancedToast.error("Erreur lors de la suppression")
       }
     }
   }
@@ -457,18 +461,18 @@ export default function TasksPage() {
         try {
           const errorData = await response.json()
           console.error("API Error:", errorData)
-          toast.error(errorData.error || "Erreur lors de la mise à jour du statut")
+          enhancedToast.error(errorData.error || "Erreur lors de la mise à jour du statut")
         } catch {
-          toast.error("Erreur lors de la mise à jour du statut")
+          enhancedToast.error("Erreur lors de la mise à jour du statut")
         }
       } else {
-        toast.success("Statut mis à jour avec succès")
+        enhancedToast.success("Statut mis à jour avec succès")
       }
     } catch (error) {
       // Revert the optimistic update if the request failed
       setTasks(tasks)
       console.error("Network Error:", error)
-      toast.error("Erreur lors de la mise à jour du statut")
+      enhancedToast.error("Erreur lors de la mise à jour du statut")
     }
   }
 
@@ -483,14 +487,14 @@ export default function TasksPage() {
       })
 
       if (response.ok) {
-        toast.success("Tag ajouté avec succès")
+        enhancedToast.success("Tag ajouté avec succès")
         fetchTasks()
       } else {
         const errorData = await response.json()
-        toast.error(errorData.error || "Erreur lors de l'ajout du tag")
+        enhancedToast.error(errorData.error || "Erreur lors de l'ajout du tag")
       }
     } catch (error) {
-      toast.error("Erreur lors de l'ajout du tag")
+      enhancedToast.error("Erreur lors de l'ajout du tag")
     }
   }
 
@@ -501,13 +505,13 @@ export default function TasksPage() {
       })
 
       if (response.ok) {
-        toast.success("Tag supprimé avec succès")
+        enhancedToast.success("Tag supprimé avec succès")
         fetchTasks()
       } else {
-        toast.error("Erreur lors de la suppression du tag")
+        enhancedToast.error("Erreur lors de la suppression du tag")
       }
     } catch (error) {
-      toast.error("Erreur lors de la suppression du tag")
+      enhancedToast.error("Erreur lors de la suppression du tag")
     }
   }
 
@@ -537,14 +541,14 @@ export default function TasksPage() {
       })
 
       if (response.ok) {
-        toast.success("Commentaire ajouté avec succès")
+        enhancedToast.success("Commentaire ajouté avec succès")
         setNewComment(prev => ({ ...prev, [taskId]: "" }))
         fetchComments(taskId)
       } else {
-        toast.error("Erreur lors de l'ajout du commentaire")
+        enhancedToast.error("Erreur lors de l'ajout du commentaire")
       }
     } catch (error) {
-      toast.error("Erreur lors de l'ajout du commentaire")
+      enhancedToast.error("Erreur lors de l'ajout du commentaire")
     }
   }
 
@@ -562,14 +566,14 @@ export default function TasksPage() {
       })
 
       if (response.ok) {
-        toast.success("Commentaire mis à jour avec succès")
+        enhancedToast.success("Commentaire mis à jour avec succès")
         setEditingComment(prev => ({ ...prev, [commentId]: "" }))
         fetchComments(taskId)
       } else {
-        toast.error("Erreur lors de la mise à jour du commentaire")
+        enhancedToast.error("Erreur lors de la mise à jour du commentaire")
       }
     } catch (error) {
-      toast.error("Erreur lors de la mise à jour du commentaire")
+      enhancedToast.error("Erreur lors de la mise à jour du commentaire")
     }
   }
 
@@ -581,13 +585,13 @@ export default function TasksPage() {
         })
 
         if (response.ok) {
-          toast.success("Commentaire supprimé avec succès")
+          enhancedToast.success("Commentaire supprimé avec succès")
           fetchComments(taskId)
         } else {
-          toast.error("Erreur lors de la suppression du commentaire")
+          enhancedToast.error("Erreur lors de la suppression du commentaire")
         }
       } catch (error) {
-        toast.error("Erreur lors de la suppression du commentaire")
+        enhancedToast.error("Erreur lors de la suppression du commentaire")
       }
     }
   }
