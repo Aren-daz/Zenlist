@@ -1,11 +1,23 @@
 import { NextRequest, NextResponse } from "next/server"
 import { db } from "@/lib/db"
+import { getCurrentUser } from "@/lib/auth"
 
 export async function GET(request: NextRequest) {
   try {
-    // Récupérer toutes les tâches pour calculer les statistiques
+    const user = await getCurrentUser()
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
+    // Récupérer les tâches de l'utilisateur pour calculer les statistiques
     const tasks = await db.task.findMany({
-      where: {}, // TODO: Ajouter un filtre par utilisateur quand l'auth est implémentée
+      where: {
+        OR: [
+          { creator: { id: user.id } },
+          { assignee: { id: user.id } },
+          { project: { workspace: { OR: [ { ownerId: user.id }, { members: { some: { userId: user.id } } } ] } } },
+        ],
+      },
     })
 
     // Calculer les statistiques
