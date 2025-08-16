@@ -8,6 +8,7 @@
     "start": "next start",
     "start:custom": "tsx server.ts",
     "lint": "next lint",
+    "check-env": "node check-env.js",
     "db:push": "prisma db push",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",

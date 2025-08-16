@@ -35,7 +35,9 @@ async function createCustomServer() {
     const io = new Server(server, {
       path: '/api/socketio',
       cors: {
-        origin: "*",
+        origin: process.env.NODE_ENV === 'production' 
+          ? [process.env.NEXTAUTH_URL || 'https://your-domain.onrender.com']
+          : "*",
         methods: ["GET", "POST"]
       }
     });

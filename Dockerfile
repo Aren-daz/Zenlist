@@ -34,6 +34,5 @@ ENV DATABASE_URL=file:./db/custom.db
 # Exposer le port
 EXPOSE 3000
 
-# Commande de démarrage (appliquer le schéma Prisma avant de démarrer)
-# Force Next à écouter sur le PORT Render (fallback 3000) et 0.0.0.0
-CMD ["sh", "-c", "npx prisma db push && next start -p ${PORT:-3000} -H 0.0.0.0"]
+# Commande de démarrage avec le serveur personnalisé
+CMD ["sh", "-c", "npx prisma db push && npm run start:custom"]
